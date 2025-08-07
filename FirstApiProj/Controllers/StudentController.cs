@@ -42,12 +42,20 @@ namespace FirstApiProj.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStudent(int? id, [FromBody] Student student)
         {
-            if (id == null) return BadRequest("Id is null");
-            var ExistingStudent = await _studentService.GetStudents(id);
-            if (ExistingStudent == null || ExistingStudent.Count == 0) return NotFound("Student Not Found");
+            if (id == null) return BadRequest("Id is null");           
+            student.Id = (int)id;
             var updated = await _studentService.UpdateStudent(student);
-            if (updated == null) return BadRequest("Not Update");
+            if (updated == null) return BadRequest("Student Not Found");
             return Ok(updated);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int? id)
+        {            
+            if (id <= 0) return BadRequest("Please provide ID");
+            var isDeleted = await _studentService.Delete(id);
+            if (!isDeleted) return NotFound("Student Not Found");
+            return  Ok("Deleted Successfully");
         }
 
     }

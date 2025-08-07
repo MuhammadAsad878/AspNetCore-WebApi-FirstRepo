@@ -13,7 +13,7 @@ namespace FirstApiProj.Service
         {
             _studentRepository = studentRepository;
         }
-     
+
 
         public async Task<List<Student>> GetStudents(int? id)
         {
@@ -28,13 +28,18 @@ namespace FirstApiProj.Service
         /// cref="Student"/> object,  or <see langword="null"/> if the creation was unsuccessful.</returns>
         public async Task<Student?> CreateStudent(Student student)
         {
-            
+
             return await _studentRepository.AddAsync(student);
         }
 
         public async Task<Student?> UpdateStudent(Student student)
         {
             return await _studentRepository.UpdateAsync(student);
+        }
+
+        public async Task<bool> Delete(int? id)
+        {
+            return await _studentRepository.DeleteAsync(id);
         }
     }
 }

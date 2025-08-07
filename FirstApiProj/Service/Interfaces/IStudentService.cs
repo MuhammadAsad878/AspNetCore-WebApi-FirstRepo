@@ -6,5 +6,6 @@ namespace FirstApiProj.Service.Interfaces
        Task<List<Student>> GetStudents(int? id);
        Task<Student?> CreateStudent(Student student);
        Task<Student?> UpdateStudent(Student student);
+       Task<bool> Delete(int? id);
     }
 }

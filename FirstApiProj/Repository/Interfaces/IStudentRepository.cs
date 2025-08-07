@@ -7,6 +7,6 @@ namespace FirstApiProj.Repository.Interfaces
         Task<List<Student>> GetAllByAsync(int? id);
         Task<Student?> AddAsync(Student student);
         Task<Student?> UpdateAsync(Student student);
-        bool Delete(int? id);
+        Task<bool> DeleteAsync(int? id);
     }
 }

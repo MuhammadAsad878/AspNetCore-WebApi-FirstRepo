@@ -41,19 +41,25 @@ namespace FirstApiProj.Repository
 
         public async Task<Student?> UpdateAsync(Student student)
         {
-            _context.Students.Update(student);
+            var studentExists = await _context.Students.FindAsync(student.Id);
+            if(studentExists == null) return null;
+            studentExists.Name = student.Name;
+            studentExists.Address = student.Address;
+            studentExists.Section = student.Section;
+            studentExists.Gpa = student.Gpa;
+            //_context.Students.Update(student);
             var res = await _context.SaveChangesAsync();
             if (res > 0) return student;
             return null;
         }
 
-        public bool Delete(int? id)
+        public async Task<bool> DeleteAsync(int? id)
         {
             if (id == null) return false;
-            var student = _context.Students.Find(id);
+            var student = await _context.Students.FindAsync(id);
             if (student == null) return false;
             _context.Students.Remove(student);
-            var res = _context.SaveChanges();
+            var res = await _context.SaveChangesAsync();
             return res > 0;
         }
     }
