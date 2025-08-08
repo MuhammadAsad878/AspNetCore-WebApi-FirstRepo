@@ -30,7 +30,7 @@ namespace FirstApiProj.Controllers
                 Gpa = student.Gpa,
                 Address = student.Address,
             }).ToList();
-            
+
             return Ok(response);
         }
 
@@ -62,15 +62,39 @@ namespace FirstApiProj.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStudent(int? id, [FromBody] DtoStudentUpdate student)
+        public async Task<IActionResult> UpdateStudent(int id, [FromBody] DtoStudentUpdate student)
         {
-            if (!ModelState.IsValid || student == null) return BadRequest( "User Not Found");
-            if (id == null) return BadRequest("Id is null");
-            student.Id = (int)id;
-            var updated = await _studentService.UpdateStudent(student);
-            if (updated == null) return BadRequest("Student Not Found");
-            return Ok(updated);
+            if (student == null)
+                return BadRequest("Invalid data: student is null");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            Student stdToBeUpdated = new Student
+            {
+                Id = id,
+                Name = student.Name,
+                Section = student.Section,
+                Address = student.Address,
+                Gpa = (float)student.Gpa,
+            };
+
+            var updated = await _studentService.UpdateStudent(stdToBeUpdated);
+
+            if (updated == null)
+                return NotFound("Student Not Found");
+
+            var response = new DtoStudentResponse
+            {
+                Name = updated.Name,
+                Section = updated.Section,
+                Address = updated.Address,
+                Gpa = updated.Gpa,
+            };
+
+            return Ok(response);
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int? id)

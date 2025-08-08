@@ -13,7 +13,7 @@ namespace FirstApiProj.Model
         public string Name { get; set; } = string.Empty; 
 
         [Required]
-        [StringLength(3,ErrorMessage = "Section Must be named as Morning or Evening also like MA - MB")]
+        [StringLength(2,MinimumLength = 2,ErrorMessage = "Section Must be named as Morning or Evening also like MA - MB")]
         public string Section { get; set; } = string.Empty;
 
         [Required]

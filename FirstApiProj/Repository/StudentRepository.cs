@@ -1,8 +1,9 @@
 ﻿using FirstApiProj.Data;
-using FirstApiProj.Model;
 using FirstApiProj.DTO;
+using FirstApiProj.Model;
 using FirstApiProj.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace FirstApiProj.Repository
 {
@@ -44,16 +45,20 @@ namespace FirstApiProj.Repository
         public async Task<Student?> UpdateAsync(Student student)
         {
             var studentExists = await _context.Students.FindAsync(student.Id);
-            if(studentExists == null) return null;
-            studentExists.Name = student.Name;
-            studentExists.Address = student.Address;
-            studentExists.Section = student.Section;
-            studentExists.Gpa = student.Gpa;
-            //_context.Students.Update(student);
+            if (studentExists == null) return null;
+            
+            if (!string.IsNullOrWhiteSpace(student.Name))  studentExists.Name = student.Name;
+
+            if (student.Gpa > 0)  studentExists.Gpa = student.Gpa;
+
+            if (!string.IsNullOrWhiteSpace(student.Address)) studentExists.Address = student.Address;
+
+            if (!string.IsNullOrWhiteSpace(student.Section)) studentExists.Section = student.Section;
+
             var res = await _context.SaveChangesAsync();
-            if (res > 0) return student;
-            return null;
+            return res > 0 ? studentExists : null;
         }
+
 
         public async Task<bool> DeleteAsync(int? id)
         {
