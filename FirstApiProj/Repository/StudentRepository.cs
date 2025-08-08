@@ -1,9 +1,8 @@
 ﻿using FirstApiProj.Data;
 using FirstApiProj.Model;
+using FirstApiProj.DTO;
 using FirstApiProj.Repository.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace FirstApiProj.Repository
 {
@@ -24,7 +23,10 @@ namespace FirstApiProj.Repository
         /// <returns></returns>
         public async Task<List<Student>> GetAllByAsync(int? id)
         {
-            if (id == null) return await _context.Students.ToListAsync();
+            if (id == null)
+            {
+                return await _context.Students.ToListAsync();
+            }
             var student = await _context.Students.FindAsync(id);
             List<Student> students = new List<Student>();
             if (student != null) students.Add(student);

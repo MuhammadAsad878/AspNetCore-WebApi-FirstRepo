@@ -2,6 +2,7 @@
 using FirstApiProj.Service.Interfaces;
 using FirstApiProj.Repository.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
+using FirstApiProj.DTO;
 
 namespace FirstApiProj.Service
 {

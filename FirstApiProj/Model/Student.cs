@@ -6,10 +6,10 @@ namespace FirstApiProj.Model
 {
     public class Student
     {
-        public int Id { get; set; }
+        public int Id { get; set; } = 0;
 
         [Required(ErrorMessage = "Name must be required !")]
-        [RegularExpression(@"^[a-zA-Z]+$",ErrorMessage ="Name Only contain letters not any special characters and spaces!")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Name can only contain letters and spaces!")]
         public string Name { get; set; } = string.Empty; 
 
         [Required]
@@ -22,5 +22,9 @@ namespace FirstApiProj.Model
         [Required]
         [Range(0.00,4.00,ErrorMessage = "Gpa Must be between 0.00 - 4.00")]
         public float Gpa { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? InActive { get; set; } = null;
+
     }
 }

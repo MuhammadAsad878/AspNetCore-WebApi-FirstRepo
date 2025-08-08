@@ -1,4 +1,5 @@
 ﻿using FirstApiProj.Model;
+using FirstApiProj.DTO;
 
 namespace FirstApiProj.Repository.Interfaces
 {
