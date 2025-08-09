@@ -44,6 +44,7 @@ namespace FirstApiProj.Repository
 
         public async Task<Student?> UpdateAsync(Student student)
         {
+            
             var studentExists = await _context.Students.FindAsync(student.Id);
             if (studentExists == null) return null;
             
@@ -65,7 +66,8 @@ namespace FirstApiProj.Repository
             if (id == null) return false;
             var student = await _context.Students.FindAsync(id);
             if (student == null) return false;
-            _context.Students.Remove(student);
+            student.InActive = DateTime.UtcNow;
+            var IsDeleted =  _context.Students.Update(student);
             var res = await _context.SaveChangesAsync();
             return res > 0;
         }
