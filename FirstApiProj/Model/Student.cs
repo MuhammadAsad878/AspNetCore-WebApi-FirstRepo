@@ -13,6 +13,5 @@ namespace FirstApiProj.Model
         public float Gpa { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? InActive { get; set; } = null;
-
     }
 }

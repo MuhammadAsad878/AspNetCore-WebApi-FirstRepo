@@ -4,30 +4,31 @@ using FirstApiProj.Constants;
 namespace FirstApiProj.Validators
 {
     public class ValidatorCreateStudent : AbstractValidator<DtoCreateStudent>
-    {        
+    {
+        // Validator for creating a new student
         public ValidatorCreateStudent()
         {
 
             RuleFor(s => s.Name)
-                .NotEmpty().WithMessage("Name is required")
-                .Matches(Regex.Name).WithMessage("Name can only contain letters and spaces!")
-                .MinimumLength(3).WithMessage("Name must be at least 3 characters long")
-                .Must(name => !string.IsNullOrWhiteSpace(name)).WithMessage("Name cannot be whitespace");
+                .NotEmpty().WithMessage(ValidationMessages.NameRequired)
+                .Matches(RegexPatterns.Name).WithMessage(ValidationMessages.NameInvalid)
+                .MinimumLength(ValidationLengths.Name.MinLength).WithMessage(ValidationMessages.NameMinLength)
+                .Must(name => !string.IsNullOrWhiteSpace(name)).WithMessage(ValidationMessages.NameWhitespace);
 
 
             RuleFor(s => s.Section)
-                .NotEmpty().WithMessage("Section is required")
-                .MinimumLength(2).WithMessage("Section must be at least 2 characters long")
-                .MaximumLength(10).WithMessage("Section must be at most 10 characters long")
-                .Matches(@"^[A-Za-z\s]+$").WithMessage("Section can only contain letters and spaces!");
+                .NotEmpty().WithMessage(ValidationMessages.SectionRequired)
+                .MinimumLength(ValidationLengths.Section.MinLength).WithMessage(ValidationMessages.SectionMinLength)
+                .MaximumLength(ValidationLengths.Section.MaxLength).WithMessage(ValidationMessages.SectionMaxLength)
+                .Matches(RegexPatterns.Section).WithMessage(ValidationMessages.SectionInvalid);
 
             RuleFor(s => s.Address)
-                .NotEmpty().WithMessage("Address is required")
-                .MinimumLength(5).WithMessage("Address must be at least 5 characters long");
+                .NotEmpty().WithMessage(ValidationMessages.AddressRequired)
+                .MinimumLength(ValidationLengths.Address.MinLength).WithMessage(ValidationMessages.AddressMinLength);
 
 
             RuleFor(s => s.Gpa)
-                .InclusiveBetween(0.00f, 4.00f).WithMessage("Gpa must be between 0.00 and 4.00");
+                .InclusiveBetween(ValidationLengths.Gpa.MinValue,ValidationLengths.Gpa.MaxValue).WithMessage(ValidationMessages.GpaRange);
         }
 
         

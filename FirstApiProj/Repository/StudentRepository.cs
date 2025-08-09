@@ -66,6 +66,7 @@ namespace FirstApiProj.Repository
             if (id == null) return false;
             var student = await _context.Students.FindAsync(id);
             if (student == null) return false;
+            if(student.InActive != null) return false; 
             student.InActive = DateTime.UtcNow;
             var IsDeleted =  _context.Students.Update(student);
             var res = await _context.SaveChangesAsync();
