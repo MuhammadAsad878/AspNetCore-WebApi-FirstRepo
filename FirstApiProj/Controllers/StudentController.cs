@@ -2,6 +2,8 @@
 using FirstApiProj.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using FirstApiProj.DTO;
+using FluentValidation.Validators;
+using FluentValidation;
 
 namespace FirstApiProj.Controllers
 {
@@ -9,36 +11,44 @@ namespace FirstApiProj.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-
         private readonly IStudentService _studentService;
+        private readonly IValidator<DtoCreateStudent> _createStudentValidator;
+        private readonly IValidator<DtoStudentUpdate> _updateStudentValidator;
 
-        public StudentController(IStudentService studentService)
+        public StudentController(IStudentService studentService, IValidator<DtoCreateStudent> createStudentValidator, IValidator<DtoStudentUpdate> updateStudentValidator)
         {
             _studentService = studentService;
+            _createStudentValidator = createStudentValidator;
+            _updateStudentValidator = updateStudentValidator;
         }
         // Controller => Service => Repository => Database
+
+        [HttpPost("register")]
+        public IActionResult Register( DtoRegister? user)
+        {
+            if (user == null) return BadRequest("Student is null!");           
+
+            return Ok(user);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetStudent(int? id)
         {
             var students = await _studentService.GetStudents(id);
             if (students == null || !students.Any()) return NotFound();
-            var response = students.Select(student => new DtoStudentResponse
-            {
-                Name = student.Name,
-                Section = student.Section,
-                Gpa = student.Gpa,
-                Address = student.Address,
-            }).ToList();
-
+            var response = students.Select(student => new DtoStudentResponse(student)).ToList();
             return Ok(response);
         }
 
         [HttpPost]
         public async Task<IActionResult> NewStudent([FromBody] DtoCreateStudent? student)
-        {
+        {            
             if (student == null) return BadRequest("Student is null!");
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var validationResult = await _createStudentValidator.ValidateAsync(student);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
             Student newStudent = new()
             {
                 Name = student.Name,
@@ -49,27 +59,21 @@ namespace FirstApiProj.Controllers
             };
             Student? createdStudent = await _studentService.CreateStudent(newStudent);
             if (createdStudent == null) return StatusCode(500, "An Error Occured while creating the student!");
-            var response = new DtoStudentResponse
-            {
-                Name = createdStudent.Name,
-                Section = createdStudent.Section,
-                Address = createdStudent.Address,
-                Gpa = createdStudent.Gpa,
-
-            };
+            var response = new DtoStudentResponse(createdStudent);
+           
             return Ok(response);
         }
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStudent(int id, [FromBody] DtoStudentUpdate student)
+        public async Task<IActionResult> UpdateStudent(int id, [FromBody] DtoStudentUpdate? student)
         {
-            if (student == null)
-                return BadRequest("Invalid data: student is null");
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
+            if(student == null) return BadRequest("Student is null!");
+            var validationResult = await _updateStudentValidator.ValidateAsync(student);
+            if(validationResult.IsValid == false)
+            {
+                return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+            }
             Student stdToBeUpdated = new Student
             {
                 Id = id,
@@ -79,19 +83,9 @@ namespace FirstApiProj.Controllers
                 Gpa = (float)student.Gpa,
             };
 
-            var updated = await _studentService.UpdateStudent(stdToBeUpdated);
-
-            if (updated == null)
-                return NotFound("Student Not Found");
-
-            var response = new DtoStudentResponse
-            {
-                Name = updated.Name,
-                Section = updated.Section,
-                Address = updated.Address,
-                Gpa = updated.Gpa,
-            };
-
+            var updatedStudent = await _studentService.UpdateStudent(stdToBeUpdated);
+            if (updatedStudent == null)  return NotFound("Student Not Found");
+            var response = new DtoStudentResponse(updatedStudent);
             return Ok(response);
         }
 
