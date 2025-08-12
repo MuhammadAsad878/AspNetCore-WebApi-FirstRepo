@@ -8,6 +8,7 @@ using FirstApiProj.Service.Interfaces;
 using FluentValidation;
 using FirstApiProj.Validators;
 using FirstApiProj.DTO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +21,29 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
+
 // Fluent-Validations setup
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddScoped<IValidator<DtoCreateStudent>, ValidatorCreateStudent>();
 builder.Services.AddScoped<IValidator<DtoStudentUpdate>, ValidatorUpdateStudent>();
+builder.Services.AddScoped<IValidator<DtoRegister>, ValidatorRegisterUser>();
 
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>(); // Assuming you have a StudentService that implements IStudentService

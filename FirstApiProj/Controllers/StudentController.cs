@@ -11,7 +11,6 @@ namespace FirstApiProj.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-
         private readonly IStudentService _studentService;
         private readonly IValidator<DtoCreateStudent> _createStudentValidator;
         private readonly IValidator<DtoStudentUpdate> _updateStudentValidator;
@@ -23,6 +22,14 @@ namespace FirstApiProj.Controllers
             _updateStudentValidator = updateStudentValidator;
         }
         // Controller => Service => Repository => Database
+
+        [HttpPost("register")]
+        public IActionResult Register( DtoRegister? user)
+        {
+            if (user == null) return BadRequest("Student is null!");           
+
+            return Ok(user);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetStudent(int? id)
@@ -59,7 +66,7 @@ namespace FirstApiProj.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateStudent(int id, [FromBody] DtoStudentUpdate student)
+        public async Task<IActionResult> UpdateStudent(int id, [FromBody] DtoStudentUpdate? student)
         {
             if(student == null) return BadRequest("Student is null!");
             var validationResult = await _updateStudentValidator.ValidateAsync(student);
